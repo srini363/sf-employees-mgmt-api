@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<sub-flow name="update-addresses-for-employeeIdSub_Flow"
+		doc:id="df5b4975-322f-414a-a2af-9f4c662830c0">
+		<json-logger:logger doc:name="Logging the request payload" doc:id="ed859492-9905-496c-93ee-0cb511c5f912" config-ref="JSON_Logger_Config" message='"Logging the request payload "'/>
+	
+		<flow-ref
+			doc:name="calling commonFlow-adding-and-changing-addresses"
+			doc:id="8e4f6ecc-078a-470a-870a-3cc733c4f023"
+			name="commonFlow-adding-and-changing-addresses" />
+		<choice doc:name="Choice"
+			doc:id="4a3f2ee5-3f3f-47c1-94f1-48e0830dc95c">
+			<when expression="#[not (isEmpty(vars.sfAddressResponse))]">
+				<ee:transform doc:name="Transform Message"
+					doc:id="58e08322-6da5-41a8-81da-1233be040623">
+					<ee:message>
+						<ee:set-payload resource="dwl/update-address.dwl" />
+					
+</ee:message>
+				</ee:transform>
+				<salesforce:update doc:name="Update the address fro an employee"
+					doc:id="57cf1f30-ad1d-4a56-8570-c47b71c90982"
+					config-ref="Salesforce_Config" type="Address__c" />
+				<logger level="INFO" doc:name="Logger"
+					doc:id="bfac15c1-2495-49fa-af89-372da262ef00" message='#["Address updated successfully"]'/>
+				<json-logger:logger doc:name="Logging the response " doc:id="cd149315-247a-4b81-8f43-04f9d28675ee" config-ref="JSON_Logger_Config" tracePoint="END" message='"Log the response"'>
+				<json-logger:content>
+					<![CDATA[#[output application/json ---
+{
+ 	payload: payload
+}]]]>
+				</json-logger:content>
+			</json-logger:logger>
+				<set-payload value='#["Address updated successfully"]' doc:name="Set Payload" doc:id="ccc77c78-9f5a-4796-991a-21332e43e931" />
+		
+			
+</when>
+			<otherwise>
+				<set-payload value='#["Invalid address  data"]' doc:name="Invalid Address ID " doc:id="a5f9275c-9f5e-439a-9000-3629b2f586f6" />
+				<logger level="INFO" doc:name="Logging the info" doc:id="0ae8e1f4-e5e0-4db1-b11c-783e9ef214f7" message="#[payload]"/>
+				<raise-error doc:name="Raise error" doc:id="5ddf4ef0-f010-4dd4-9c9b-2bb2ea73bfbd" type="CUSTOM_ERROR:SF_ADDESS_NOT_FOUND" description="Address not found in the Sf to do update operation"/>
+	
+			</otherwise>
+		</choice>
+	</sub-flow>
+	<sub-flow name="create-addresses-for-employeeIdSub_Flow"
+		doc:id="1722f35f-a7ae-478e-9131-a5acf6731bba">
+		<json-logger:logger doc:name="Logging the request payload" doc:id="30c4b69b-f1b1-41a3-a023-40313bb31332" config-ref="JSON_Logger_Config" message='"Logging the request payload "'/>
+	
+		<flow-ref
+			doc:name="calling commonFlow-adding-and-changing-addresses"
+			doc:id="22ab2409-9196-4376-9705-12dc0b364cda"
+			name="commonFlow-adding-and-changing-addresses" />
+		<ee:transform doc:name="Transform Message"
+			doc:id="b49cfefa-2cf4-4bbb-b3f4-68d643819705">
+			<ee:message>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/create-address.dwl" variableName="addressInfo" />
+			</ee:variables>
+		
+</ee:transform>
+		<choice doc:name="Choice"
+					doc:id="3a1e7973-c381-4470-930a-3275f2513e15">
+			<when expression="#[not (isEmpty(vars.sfAddressResponse))]">
+				<flow-ref doc:name="create address for employee" doc:id="b4b3853a-c9ca-420a-86fb-0667decad012" name="sf_addresses_create-Sub_flow"/>
+				<json-logger:logger doc:name="Logging the response " doc:id="cdae5f7f-3fa7-4764-bb0b-beab6eff07ce" config-ref="JSON_Logger_Config" tracePoint="END" message='"Log the response"'>
+				<json-logger:content>
+					<![CDATA[#[output application/json ---
+{
+ 	payload: payload
+}]]]>
+				</json-logger:content>
+			</json-logger:logger>
+				<set-payload value='#["Successfully created the addresses"]' doc:name="Set Payload" doc:id="7099b842-6190-469f-a5d6-a18f53f43bb5" />
+		
+			
+</when>
+			<otherwise>
+				<set-payload value='#["Invalid address  data"]' doc:name="Invalid Address ID " doc:id="297a1db0-3a8d-430c-8c48-6f66a7fb326d" />
+				<logger level="INFO" doc:name="Logging the info" doc:id="cf0ef2aa-6ef7-4995-ae74-2fc5ebc5fd53" message="#[payload]"/>
+				<raise-error doc:name="Raise error" doc:id="d40e2370-0b5e-4b6c-a40d-b4e2a9e330cc" type="CUSTOM_ERROR:SF_ADDESS_NOT_FOUND" description="Address not found in the Sf to do create operation"/>
+			</otherwise>
+		</choice>
+	</sub-flow>
+	<sub-flow name="delete-employee-detailsSub_Flow" doc:id="2d663d00-9805-4bff-aec3-350e1bbbef91" >
+		<json-logger:logger doc:name="Logging the request id " doc:id="6ec0125d-be99-4040-a12f-ce8b688186d4" config-ref="JSON_Logger_Config" message='"Logging the request payload "'/>
+		<set-variable value="#[attributes.uriParams.'id']" doc:name="Set Variable to EmployeeId" doc:id="f054106f-ed8d-429a-8ca6-0c07a1acd299" variableName="id"/>
+		<flow-ref doc:name="Get the employee details Id" doc:id="b33e5f2f-e121-4c38-ab09-81fb1f898304" name="sf-employees-query-Sub_flow"/>
+		<choice doc:name="Choice" doc:id="ab9825eb-ea86-448d-8615-914684d8e856" >
+			<when expression='#[vars.sfEmployeeResponse[0].Id != null]'>
+				<salesforce:delete doc:name="Delete  the employeeDetais in SF" doc:id="44c77631-8f66-4f99-bb49-1e5ef5763345" config-ref="Salesforce_Config" >
+					<salesforce:ids >
+						<![CDATA[#[%dw 2.0
+output application/json
+---
+[vars.sfEmployeeResponse[0].Id]]]]>
+					</salesforce:ids>
+				</salesforce:delete>
+				<flow-ref doc:name="Get the addresses Id" doc:id="957a1271-aac5-4e77-b852-3674b4d25f5e" name="sf-addresses-query-Sub_flow"/>
+				<choice doc:name="Choice" doc:id="13b715b7-5ab9-4d1a-bc20-03938a1a7445" >
+					<when expression="#[not (isEmpty(vars.sfAddressResponse))]">
+						<salesforce:delete doc:name="Delete the addresses data" doc:id="bf2ff61e-48dc-418f-b33c-45bc3c9de579" config-ref="Salesforce_Config">
+							<salesforce:ids>
+								<![CDATA[#[%dw 2.0
+output application/json
+---
+[vars.sfAddressResponse[0].Id]]]]>
+							</salesforce:ids>
+						</salesforce:delete>
+						<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+if (payload.successful == true) {
+	"message":"Successfully deleted the Employee & Address Details "
+} else "Employee details is not deleted check the Employee Id posted"]]>
+								</ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<json-logger:logger doc:name="Logging the response " doc:id="93e58559-eabc-4389-8389-36ba96a657cd" config-ref="JSON_Logger_Config" tracePoint="END" message='"Log the response"'>
+							<json-logger:content>
+								<![CDATA[#[output application/json ---
+{
+ 	payload: payload
+}]]]>
+							</json-logger:content>
+						</json-logger:logger>
+					</when>
+					<otherwise >
+						<logger level="INFO" doc:name="Logger" doc:id="c46661cb-e0e2-4a54-9b50-1dcc90e16fe3" message='#["No address found for the employee"]' />
+						<set-payload value='#["Successfully deleted the only Employee Details "]' doc:name="Set Payload" doc:id="380c15b1-88e9-4cc1-b10e-5c752d7608e8" />
+					</otherwise>
+				</choice>
+			
+</when>
+			<otherwise >
+				<set-payload value='#["Invalid Employee ID to delete the data"]' doc:name="Invalid Employee ID " doc:id="96825d2d-8cbb-40c0-ae40-01d9e478ed8f" />
+				<logger level="INFO" doc:name="Logging the info" doc:id="71ec1085-dbc2-4072-907a-3e048d276b77" message="#[payload]"/>
+				<raise-error doc:name="Raise error" doc:id="931d102f-a216-4cea-92c0-03512bb106a1" type="CUSTOM_ERROR:SF_EMPL_NOT_FOUND" description="Employee not found in the Sf to do delete operation"/>
+			</otherwise>
+		</choice>
+	</sub-flow>
+	<sub-flow name="get-employees-details-Sub_Flow" doc:id="6110d720-1c9c-4fb1-8999-4a20dbde906e" >
+		<json-logger:logger doc:name="Logging the request id " doc:id="ba28f61c-f12a-4e72-816c-23457c725f63" config-ref="JSON_Logger_Config" message='"Logging the request payload "'/>
+		<set-variable value="#[attributes.uriParams.'id']" doc:name="Set Variable to EmployeeId" doc:id="075da75b-23b0-4ee3-86c7-9c4cb0d9ef09" variableName="id"/>
+		<flow-ref doc:name="get the employee details for Id" doc:id="ac2d17a3-760a-4272-b9d4-37a3535f8bd5" name="sf-employees-query-Sub_flow"/>
+		<choice doc:name="Choice" doc:id="392da1ae-23c7-438b-b262-6fabef3e9e1f" >
+			<when expression='#[vars.sfEmployeeResponse[0].Id != null]'>
+				<flow-ref doc:name="get the address for employee Id" doc:id="c381d370-a5e7-42ba-9e3f-c6ac992813c0" name="sf-addresses-query-Sub_flow"/>
+				<ee:transform
+					xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+					<ee:message>
+						<ee:set-payload resource="dwl/employee-details-response.dwl" />
+					
+</ee:message>
+				</ee:transform>
+				<json-logger:logger doc:name="Logging the response " doc:id="ae29160a-4311-479a-a035-1942062457a2" config-ref="JSON_Logger_Config" tracePoint="END" message='"Log the response"' >
+					<json-logger:content >
+						<![CDATA[#[output application/json ---
+{
+ 	payload: payload
+}]]]>
+					</json-logger:content>
+				</json-logger:logger>
+			</when>
+			<otherwise >
+				<set-payload value='#["Invalid Employee ID to delete the data"]' doc:name="Invalid Employee ID " doc:id="d20fe647-d791-4a0e-866a-7d979fcf5f3f" />
+				<logger level="INFO" doc:name="Logging the info" doc:id="06fe9284-3588-4f2c-8c06-8b2ddcaaa9c6" message="#[payload]"/>
+				<raise-error doc:name="Raise error" doc:id="41d78ce6-515a-48d1-bddd-44204b5a2579" type="CUSTOM_ERROR:SF_EMPL_NOT_FOUND" description="Employee Id not found in  the SF "/>
+			</otherwise>
+		</choice>
+	</sub-flow>
+<sub-flow name="update-employee-detailsSub_Flow" doc:id="6c2eb0a1-ec2f-477d-a18e-15313aa67da6" >
+	<json-logger:logger doc:name="Logging the request id " doc:id="44212a22-0351-4215-a8d3-c605e401e20b" config-ref="JSON_Logger_Config" message='"Logging the request payload "'/>
+	<set-variable value="#[attributes.uriParams.'id']" doc:name="Set Variable to EmployeeId" doc:id="796ec676-2b69-4f73-9736-c910a8beff2f" variableName="id"/>
+	<flow-ref doc:name="Get the Employee Id" doc:id="5dd48f51-236e-422e-8eb1-77c2ca2e701f" name="sf-employees-query-Sub_flow"/>
+	<choice doc:name="Choice" doc:id="e34ce37f-8783-465e-9c22-4cb5c498945e" >
+		<when expression='#[vars.sfEmployeeResponse[0].Id != null]'>
+			<ee:transform
+				xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+				<ee:message>
+						<ee:set-payload resource="dwl/update-employee.dwl" />
+				
+</ee:message>
+			</ee:transform>
+			<salesforce:update doc:name="Update the data info Employee Obj" doc:id="9ff5f4f0-4717-426d-85d6-459ee7e8366c" config-ref="Salesforce_Config" type="Employee__c"/>
+			<json-logger:logger doc:name="Logging the response " doc:id="a0d9d4dc-4a33-43e7-a056-1e43d6333078" config-ref="JSON_Logger_Config" tracePoint="END" message='"Log the response"' >
+				<json-logger:content >
+					<![CDATA[#[output application/json ---
+{
+ 	payload: payload
+}]]]>
+				</json-logger:content>
+			</json-logger:logger>
+			<set-payload value='#["Successfully update the employee details"]' doc:name="Set Payload" doc:id="2eb9da6c-f2a3-4e6c-8b0f-f83990d0c2c0" />
+		</when>
+		<otherwise >
+			<set-payload value='#["Invalid Employee ID to update the data"]' doc:name="Invalid Employee ID " doc:id="55b2f541-2494-4d6b-b273-5c611fe3eb09" />
+			<logger level="INFO" doc:name="Logging the info" doc:id="fed13ddc-d964-44f1-a914-84fe711e45f3" message="#[payload]"/>
+			<raise-error doc:name="Raise error" doc:id="075d57da-7a84-47b3-a4bc-30f06bb42e41" type="CUSTOM_ERROR:SF_EMPL_NOT_FOUND" description="Employee Id not found to update the data"/>
+		</otherwise>
+	</choice>
+</sub-flow>
+
+	
+
+	<sub-flow name="create-employees-details_Sub_Flow" doc:id="57401e1a-2e9d-483d-b7d7-70086695e207" >
+		<json-logger:logger doc:name="Logging the request payload" doc:id="44efbbfb-02fa-4fe9-a48f-12b765ac7e1c" config-ref="JSON_Logger_Config" message='"Logging the request payload "'/>
+	
+		<set-variable value="#[uuid()]" doc:name="Set uniqueId Variable" doc:id="5b6abd49-cc2f-458c-bb32-86f4e2851fa1" variableName="uniqueId" />
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:name="Transform the data to SF create">
+		<ee:message></ee:message>
+		<ee:variables>
+				<ee:set-variable resource="dwl/create-employee-detail.dwl" variableName="employeeDetails" />
+		
+</ee:variables>
+	</ee:transform>
+		<flow-ref doc:name="create the employee in Sf" doc:id="aa2b50a6-2f60-4290-ae9b-fab228ddd807" name="create_employe-Sub_Flow" />
+		<choice doc:name="Choice" doc:id="aa2265c1-e61f-4489-9e24-1830cb9e8244">
+		<when expression="#[vars.sfEmployeeCreateResponse.successful]">
+			<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+				<ee:message>
+				</ee:message>
+					<ee:variables >
+						<ee:set-variable resource="dwl/create-employee-address.dwl" variableName="addressInfo" />
+					</ee:variables>
+			
+</ee:transform>
+			<flow-ref doc:name="create the address for the employee" doc:id="00ba7ce9-fb32-45f7-ae41-8f1c52b9286a" name="sf_addresses_create-Sub_flow" />
+			<json-logger:logger doc:name="Logging the response " doc:id="98492ebf-e781-4429-97fc-67698eb17586" config-ref="JSON_Logger_Config" tracePoint="END" message='"Log the response"'>
+				<json-logger:content>
+					<![CDATA[#[output application/json ---
+{
+ 	payload: payload
+}]]]>
+				</json-logger:content>
+			</json-logger:logger>
+				<set-payload value='#["Successfully created the  Employee Details "]' doc:name="Set Payload" doc:id="2961e118-566b-4663-b4ee-171abf30f5fc" />
+		
+</when>
+		<otherwise>
+			<set-payload value='#["Invalid Employee ID to delete the data"]' doc:name="Invalid Employee ID " doc:id="43564637-7b7a-4d29-914d-717f1bc5ab47" />
+			<logger level="INFO" doc:name="Logging the info" doc:id="03932fb6-39f3-404c-9176-80620b693868" message="#[payload]" />
+			<raise-error doc:name="Raise error" doc:id="03531fdc-2434-463b-94d7-0f2102a80c6d" description='"Data no updated due to technical issue"' type="CUSTOM_ERROR:SF_EMPL_NOT_FOUND" />
+		</otherwise>
+	</choice>
+	</sub-flow>
+</mule>

@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="sf-employees-mgmt-api-impl-suite.xml" />
+	<munit:test name="create-employees-details_Sub_Flow-test" doc:id="33b71110-042f-4760-b3ef-4eef6aa2feca" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock create the address for the employee" doc:id="af0b8faa-08d5-4880-bf1b-041abf82d1be" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="00ba7ce9-fb32-45f7-ae41-8f1c52b9286a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://createemployeesdetailsSubFlowtest\mock_payload2.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://createemployeesdetailsSubFlowtest\mock_variable_9.dwl')]" />
+						<munit-tools:variable key="addressInfo" value="#[output application/java --- readUrl('classpath://createemployeesdetailsSubFlowtest\mock_variable_10.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="uniqueId" value="#[output application/java --- readUrl('classpath://createemployeesdetailsSubFlowtest\mock_variable_11.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="sfEmployeeCreateResponse" value="#[output application/java --- readUrl('classpath://createemployeesdetailsSubFlowtest\mock_variable_12.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="employeeDetails" value="#[output application/java --- readUrl('classpath://createemployeesdetailsSubFlowtest\mock_variable_13.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock create the employee in Sf" doc:id="698ad89a-c9af-49a9-8ebf-761bc8c56cc2" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="aa2b50a6-2f60-4290-ae9b-fab228ddd807" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://createemployeesdetailsSubFlowtest\mock_payload3.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://createemployeesdetailsSubFlowtest\mock_attributes1.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://createemployeesdetailsSubFlowtest\mock_variable_14.dwl')]" />
+						<munit-tools:variable key="uniqueId" value="#[output application/java --- readUrl('classpath://createemployeesdetailsSubFlowtest\mock_variable_15.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="sfEmployeeCreateResponse" value="#[output application/java --- readUrl('classpath://createemployeesdetailsSubFlowtest\mock_variable_16.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="employeeDetails" value="#[output application/java --- readUrl('classpath://createemployeesdetailsSubFlowtest\mock_variable_17.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="39831c23-0662-4a64-b868-b0a438d01cca" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://createemployeesdetailsSubFlowtest\set-event_payload1.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://createemployeesdetailsSubFlowtest\set-event_attributes1.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://createemployeesdetailsSubFlowtest\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to create-employees-details_Sub_Flow" doc:id="86e5d79a-78f5-4312-82aa-c922738f301f" name="post:\employees:application\json:sf-employees-mgmt-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="3f763150-a54e-4dfd-8fd7-4b19a98e1257" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import createemployeesdetailsSubFlowtest::assert_expression_payload1
+---
+assert_expression_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="update-employee-detailsSub_Flow-test" doc:id="3a4f856b-5d1d-439a-9e0e-1eeee4ae1e78" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Update the data info Employee Obj" doc:id="48141f68-1952-41e6-b562-ff86a5f8dc28" processor="salesforce:update">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="9ff5f4f0-4717-426d-85d6-459ee7e8366c" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://updateemployeedetailsSubFlowtest\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://updateemployeedetailsSubFlowtest\mock_variable_.dwl')]" />
+						<munit-tools:variable key="id" value="#[output application/java --- readUrl('classpath://updateemployeedetailsSubFlowtest\mock_variable_1.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="sfEmployeeResponse" value="#[output application/java --- readUrl('classpath://updateemployeedetailsSubFlowtest\mock_variable_2.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock Get the Employee Id" doc:id="01ea1a7a-27f7-4bb2-8ee9-40b7bfcf6b83" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="5dd48f51-236e-422e-8eb1-77c2ca2e701f" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://updateemployeedetailsSubFlowtest\mock_payload1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://updateemployeedetailsSubFlowtest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://updateemployeedetailsSubFlowtest\mock_variable_3.dwl')]" />
+						<munit-tools:variable key="id" value="#[output application/java --- readUrl('classpath://updateemployeedetailsSubFlowtest\mock_variable_4.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="sfEmployeeResponse" value="#[output application/java --- readUrl('classpath://updateemployeedetailsSubFlowtest\mock_variable_5.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="c761757a-e635-4a58-9246-236979dc0db2" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://updateemployeedetailsSubFlowtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://updateemployeedetailsSubFlowtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://updateemployeedetailsSubFlowtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to update-employee-detailsSub_Flow" doc:id="f279daa9-c0db-4add-9c10-a7043372b2ea" name="put:\employees\(id):application\json:sf-employees-mgmt-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="8854ec9f-3a71-4955-8732-4c54ae60b063" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import updateemployeedetailsSubFlowtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get-employees-details-Sub_Flow-test" doc:id="3625966d-767a-4371-9897-076c8e53924e" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock get the employee details for Id" doc:id="d1c60bd8-f778-4597-a4c6-2f38c934fef3" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="ac2d17a3-760a-4272-b9d4-37a3535f8bd5" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://getemployeesdetailsSubFlowtest\mock_payload2.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://getemployeesdetailsSubFlowtest\mock_attributes2.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://getemployeesdetailsSubFlowtest\mock_variable_7.dwl')]" />
+						<munit-tools:variable key="id" value="#[output application/java --- readUrl('classpath://getemployeesdetailsSubFlowtest\mock_variable_8.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="sfEmployeeResponse" value="#[output application/java --- readUrl('classpath://getemployeesdetailsSubFlowtest\mock_variable_9.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock get the address for employee Id" doc:id="e0a677b8-fc00-4cfe-ba08-6542557f2b1a" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="c381d370-a5e7-42ba-9e3f-c6ac992813c0" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://getemployeesdetailsSubFlowtest\mock_payload3.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://getemployeesdetailsSubFlowtest\mock_attributes3.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://getemployeesdetailsSubFlowtest\mock_variable_10.dwl')]" />
+						<munit-tools:variable key="sfAddressResponse" value="#[output application/java --- readUrl('classpath://getemployeesdetailsSubFlowtest\mock_variable_11.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="id" value="#[output application/java --- readUrl('classpath://getemployeesdetailsSubFlowtest\mock_variable_12.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="sfEmployeeResponse" value="#[output application/java --- readUrl('classpath://getemployeesdetailsSubFlowtest\mock_variable_13.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="c248d5e2-96cf-4bac-ac49-31c96c756908" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://getemployeesdetailsSubFlowtest\set-event_payload1.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://getemployeesdetailsSubFlowtest\set-event_attributes1.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getemployeesdetailsSubFlowtest\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get-employees-details-Sub_Flow" doc:id="5c38cb15-b0d5-4498-b6e8-975a47c96909" name="get:\employees\(id):sf-employees-mgmt-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="31ea6263-a7dd-40fc-aa6f-9a5c1d0b71f2" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getemployeesdetailsSubFlowtest::assert_expression_payload1
+---
+assert_expression_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="update-addresses-for-employeeIdSub_Flow-test" doc:id="da161f0f-316e-46d1-b48c-328b62763b07" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Update the address fro an employee" doc:id="574c03c5-6819-46e9-85b5-2217356adc0d" processor="salesforce:update">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="57cf1f30-ad1d-4a56-8570-c47b71c90982" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://updateaddressesforemployeeIdSubFlowtest\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://updateaddressesforemployeeIdSubFlowtest\mock_variable_.dwl')]" />
+						<munit-tools:variable key="sfAddressResponse" value="#[output application/java --- readUrl('classpath://updateaddressesforemployeeIdSubFlowtest\mock_variable_1.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="id" value="#[output application/java --- readUrl('classpath://updateaddressesforemployeeIdSubFlowtest\mock_variable_2.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="sfEmployeeResponse" value="#[output application/java --- readUrl('classpath://updateaddressesforemployeeIdSubFlowtest\mock_variable_3.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock calling commonFlow-adding-and-changing-addresses" doc:id="53477721-f262-4208-879b-42c18e84aa6e" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="8e4f6ecc-078a-470a-870a-3cc733c4f023" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://updateaddressesforemployeeIdSubFlowtest\mock_payload1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://updateaddressesforemployeeIdSubFlowtest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://updateaddressesforemployeeIdSubFlowtest\mock_variable_4.dwl')]" />
+						<munit-tools:variable key="sfAddressResponse" value="#[output application/java --- readUrl('classpath://updateaddressesforemployeeIdSubFlowtest\mock_variable_5.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="id" value="#[output application/java --- readUrl('classpath://updateaddressesforemployeeIdSubFlowtest\mock_variable_6.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="sfEmployeeResponse" value="#[output application/java --- readUrl('classpath://updateaddressesforemployeeIdSubFlowtest\mock_variable_7.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="82226eaa-4549-43a3-8e89-cd58bbdf4696" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://updateaddressesforemployeeIdSubFlowtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://updateaddressesforemployeeIdSubFlowtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://updateaddressesforemployeeIdSubFlowtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to update-addresses-for-employeeIdSub_Flow" doc:id="5e197427-fe26-49a8-bae8-0258a47d7e01" name="put:\addresses\(id):application\json:sf-employees-mgmt-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="a323dc04-81ba-43ec-a577-34620d40eed1" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import updateaddressesforemployeeIdSubFlowtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="create-addresses-for-employeeIdSub_Flow-test" doc:id="4a13b3ab-bc36-453c-ab70-ad02bc996fe5" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock calling commonFlow-adding-and-changing-addresses" doc:id="1d861e56-9d31-4b52-9aa6-abfe260dfd47" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="22ab2409-9196-4376-9705-12dc0b364cda" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://createaddressesforemployeeIdSubFlowtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://createaddressesforemployeeIdSubFlowtest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://createaddressesforemployeeIdSubFlowtest\mock_variable_.dwl')]" />
+						<munit-tools:variable key="sfAddressResponse" value="#[output application/java --- readUrl('classpath://createaddressesforemployeeIdSubFlowtest\mock_variable_1.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="id" value="#[output application/java --- readUrl('classpath://createaddressesforemployeeIdSubFlowtest\mock_variable_2.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="sfEmployeeResponse" value="#[output application/java --- readUrl('classpath://createaddressesforemployeeIdSubFlowtest\mock_variable_3.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock create address for employee" doc:id="177e7373-a4b1-417f-822e-dbac199383b4" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="b4b3853a-c9ca-420a-86fb-0667decad012" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://createaddressesforemployeeIdSubFlowtest\mock_payload1.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://createaddressesforemployeeIdSubFlowtest\mock_variable_4.dwl')]" />
+						<munit-tools:variable key="addressInfo" value="#[output application/java --- readUrl('classpath://createaddressesforemployeeIdSubFlowtest\mock_variable_5.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="sfAddressResponse" value="#[output application/java --- readUrl('classpath://createaddressesforemployeeIdSubFlowtest\mock_variable_6.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="id" value="#[output application/java --- readUrl('classpath://createaddressesforemployeeIdSubFlowtest\mock_variable_7.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="sfEmployeeResponse" value="#[output application/java --- readUrl('classpath://createaddressesforemployeeIdSubFlowtest\mock_variable_8.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="eae953a8-22f1-4fc4-a8aa-bcbe8dba8138" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://createaddressesforemployeeIdSubFlowtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://createaddressesforemployeeIdSubFlowtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://createaddressesforemployeeIdSubFlowtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to create-addresses-for-employeeIdSub_Flow" doc:id="f4e46a60-096e-43c0-9a5e-fceae086797c" name="create-addresses-for-employeeIdSub_Flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="55c56e79-1350-43ba-8119-453bf0e2f308" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import createaddressesforemployeeIdSubFlowtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+<munit:test name="common-test-suite-commonFlow-adding-and-changing-addressesTest" doc:id="ab628221-b37b-4515-b3a1-a3b40c230730" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="539e008c-c51c-4149-9982-1c270531e6ad" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="get requested employee details" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="ac7ce1d2-6f54-4d46-9808-dae2260e011e" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+		
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3e7a145e-0c2e-4481-bc91-e1b00d9728fd" />
+			<flow-ref doc:name="Flow-ref to commonFlow-adding-and-changing-addresses" doc:id="714fd5a5-fa90-4172-b1e2-ef8a634cc72a" name="commonFlow-adding-and-changing-addresses"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="common-test-suite-sf-employees-query-Sub_flowTest" doc:id="0d5b7c98-49ae-40d6-8f0e-c3220ef52785" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="d685bd98-f456-4aa6-8350-8a9e64ba49b3" processor="salesforce:query">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Query the employee details" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="cd7fd977-ba0c-4c4a-b50c-4429178a4e48" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to sf-employees-query-Sub_flow" doc:id="7e4e9cc6-2b0b-4aec-a542-18ae88645d9f" name="sf-employees-query-Sub_flow"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="common-test-suite-sf-addresses-query-Sub_flowTest" doc:id="fc4a3d3f-7b67-47ff-8460-c13f5879ee4b" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="89852474-fbfc-434d-8a3b-ca3252f5d78d" processor="salesforce:query">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Query the addresses details" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="8d2e8920-bc88-4531-94b6-d0db2ec75d34" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to sf-addresses-query-Sub_flow" doc:id="d2ea6866-5545-407c-9e72-d30d1418b240" name="sf-addresses-query-Sub_flow"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="common-test-suite-sf_addresses_create-Sub_flowTest" doc:id="3882f08d-8ef8-4881-90ef-b7de27c434de" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="f9d738a9-cd76-4b8e-9c77-04817d93d229" processor="salesforce:create">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Create the Addresses details" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="f27069f9-3999-4fab-8de0-7ba7d0dcf3db" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to sf_addresses_create-Sub_flow" doc:id="48a493f9-967b-49a4-9e2a-567ffc7f612d" name="sf_addresses_create-Sub_flow"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="common-test-suite-sf_addresses_upsert-Sub_FlowTest" doc:id="4aa33b86-6c5e-4270-859f-daf6f58c02a0" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="864aa9ff-f354-4a58-9757-c2ec03f72901" processor="salesforce:upsert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Upsert the Addresses details" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="d1c91d92-2872-429d-b77c-0f1df65ebb86" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to sf_addresses_upsert-Sub_Flow" doc:id="82151def-ec2b-4a86-a5a6-35a8f6b4b410" name="sf_addresses_upsert-Sub_Flow"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="common-test-suite-create_employe-Sub_FlowTest" doc:id="f7b2b406-529a-43bf-9369-d8ebb0c1ef04" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="8c0cc864-8728-461e-a4ad-47fc8022b2ee" processor="salesforce:create">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Employee__c" attributeName="type" />
+					<munit-tools:with-attribute whereValue="Create employee details" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+		
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to create_employe-Sub_Flow" doc:id="6ad22bac-e5c4-4618-a1e6-6a10f2ac38f7" name="create_employe-Sub_Flow"/>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>

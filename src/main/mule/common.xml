@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<sub-flow name="sf-employees-query-Sub_flow"
+		doc:id="114c4d6d-f475-4f5d-8142-e8f3bbfc5611">
+		<salesforce:query doc:name="Query the employee details"
+			doc:id="cd7fd977-ba0c-4c4a-b50c-4429178a4e48"
+			config-ref="Salesforce_Config" target="sfEmployeeResponse">
+			<salesforce:salesforce-query><![CDATA[${sf.query.employees}]]></salesforce:salesforce-query>
+			<salesforce:parameters><![CDATA[#[output application/java
+---
+{
+	"id" : vars.id
+}]]]></salesforce:parameters>
+		</salesforce:query>
+	</sub-flow>
+	<sub-flow name="sf-addresses-query-Sub_flow"
+		doc:id="f0335aa0-fefc-4fb3-9aff-4d81a1d4dbb7">
+		<salesforce:query doc:name="Query the addresses details"
+			doc:id="8d2e8920-bc88-4531-94b6-d0db2ec75d34"
+			config-ref="Salesforce_Config" target="sfAddressResponse">
+			<salesforce:salesforce-query><![CDATA[${sf.query.addresses}]]></salesforce:salesforce-query>
+			<salesforce:parameters><![CDATA[#[output application/java
+---
+{
+	"id" : vars.sfEmployeeResponse[0].Id
+}]]]></salesforce:parameters>
+		</salesforce:query>
+	</sub-flow>
+	<sub-flow name="sf_addresses_create-Sub_flow"
+		doc:id="6c71a34b-7c00-425c-9856-551bc471812d">
+		<salesforce:create doc:name="Create the Addresses details"
+			doc:id="f27069f9-3999-4fab-8de0-7ba7d0dcf3db"
+			config-ref="Salesforce_Config" type="Address__c">
+			<salesforce:records><![CDATA[#[vars.addressInfo]]]></salesforce:records>
+		</salesforce:create>
+	</sub-flow>
+	<sub-flow name="sf_addresses_upsert-Sub_Flow"
+		doc:id="7eb5df96-8511-45b2-aa36-851057e1f623">
+		<!-- <salesforce:update doc:name="sf_addresses_update" doc:id="336c6f49-775f-4ee4-ae22-95fea7e53e06" 
+			config-ref="Salesforce_Config" type="Address__c"/> -->
+		<salesforce:upsert doc:name="Upsert the Addresses details"
+			doc:id="d1c91d92-2872-429d-b77c-0f1df65ebb86"
+			config-ref="Salesforce_Config" objectType="Address__c"
+			externalIdFieldName="${sf.externalId.addressExternalIdName}" />
+	</sub-flow>
+	<!-- <sub-flow name="query-employee-sf-object"
+		doc:id="339c719e-cbab-4970-b6fb-b9edd492a270">
+		<salesforce:query
+			doc:name="Query the daEmployee details from the saleforce"
+			doc:id="0c066f3b-d90b-4f5d-9eda-2c8c62e9de77"
+			config-ref="Salesforce_Config">
+			<salesforce:salesforce-query><![CDATA[select FirstName__c,LastName__c,DOB__c,Gender__c,Title__c,type__c,number__c,street__c,Unit__c,City__c,State__c,zipcode__c from Employee__c where employee_Id__c=':employeeId' LIMIT 20]]></salesforce:salesforce-query>
+			<salesforce:parameters><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"employeeId" : vars.employeeId
+}]]]></salesforce:parameters>
+		</salesforce:query>
+	</sub-flow> -->
+	<sub-flow name="create_employe-Sub_Flow" doc:id="c99f1fad-6eef-460f-83dc-92a8b570dc70" >
+		<salesforce:create type="Employee__c" doc:name="Create employee details" doc:id="7bdd94bc-6cde-4f26-9960-22a60f714a70" config-ref="Salesforce_Config" target="sfEmployeeCreateResponse">
+			<salesforce:records ><![CDATA[#[vars.employeeDetails]]]></salesforce:records>
+		</salesforce:create>
+	</sub-flow>
+	<sub-flow name="commonFlow-adding-and-changing-addresses"
+		doc:id="dc7acaa3-ed30-4037-9ad3-88541e4bb452">
+		<json-logger:logger
+			doc:name="Logging the request id "
+			doc:id="49bf5427-480e-4126-8b9d-f105730dcd96"
+			config-ref="JSON_Logger_Config"
+			message='"Logging the request payload "' />
+
+		
+		<set-variable value="#[attributes.uriParams.'id']"
+			doc:name="Set Variable to EmployeeId"
+			doc:id="7cd58ee7-65ef-4420-9d82-06d55a75a529" variableName="id" />
+
+		<flow-ref doc:name="get requested employee details"
+			doc:id="ac7ce1d2-6f54-4d46-9808-dae2260e011e"
+			name="sf-employees-query-Sub_flow" />
+		<choice doc:name="Choice"
+			doc:id="ebc9edbe-1b53-4e80-9605-9c485215b8b8">
+			<when expression="#[not (isEmpty(vars.sfEmployeeResponse))]">
+				<flow-ref
+					doc:name="get requested addresses details based on Id"
+					doc:id="62819dba-d521-464f-8f71-9d3698054f2e"
+					name="sf-addresses-query-Sub_flow" />
+				
+
+			</when>
+			<otherwise>
+				<logger level="INFO" doc:name="Logger"
+					doc:id="2931cbb4-1c00-45a4-8ff5-15cfcf4c6781" />
+			</otherwise>
+		</choice>
+	</sub-flow>
+</mule>

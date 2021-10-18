@@ -1,0 +1,12 @@
+{
+  
+  "apiName": "sf-employees-mgmt-sapi",
+  "version": "1.0",
+  "correlationId": "faaa7330-764f-11ea-a862-54e1ad4a04c0",
+  "timestamp": "2021-10-04T14:11:45.658+05:30",
+  "errorDetails": {
+    "code": 415,
+    "message": "Unsupported Media Type ",
+    "additionalInfo": "Unsupported Media Type : The server will not accept the request, because the mediatype is not supported"
+  }
+}

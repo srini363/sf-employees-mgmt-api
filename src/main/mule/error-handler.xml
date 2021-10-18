@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:error-handler-plugin="http://www.mulesoft.org/schema/mule/error-handler-plugin" xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/error-handler-plugin http://www.mulesoft.org/schema/mule/error-handler-plugin/current/mule-error-handler-plugin.xsd">
+	
+	<sub-flow name="error-handlerSub_Flow" doc:id="18856187-21d1-4a91-b515-704dc90decb4" >
+				<json-logger:logger doc:name="Log Exception" doc:id="d2e68354-6d99-474a-ad3c-333136e98b21" message="An error has occured" priority="ERROR" config-ref="JSON_Logger_Config">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	error: error
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<set-variable value="#[write(error.errorMessage.payload default null,'application/json')]" doc:name="Set the error payload" doc:id="b4aa60c2-63af-45ec-b767-376786fd514d" variableName="errorMsg" />
+		<logger level="INFO" doc:name="Logger" doc:id="89c3d292-f2d8-4dd3-bfb5-5573d6cce962" message="#[vars.errorMsg]" />
+		<choice doc:name="Choice" doc:id="9999fa82-85a3-4e1b-b183-5faeb91e6f01">
+			<when expression='vars.errorMsg != "null"'>
+					<error-handler-plugin:on-error doc:name="Process Error" doc:id="bcdd6022-0df0-40ef-97c9-0a8b9b86ef66" notFoundError='#[vars.errorMsg default "The API has not been implemented"]' serverError='#[vars.errorMsg default "There is a server issue"]' badRequestError='#[vars.errorMsg default "There was an issue with your request message."]' errorTypes="ENCOMPASS:INVALID_CLIENT_ID" errorCodes="500" errorMessages="Client Id is not valid">
+				</error-handler-plugin:on-error>
+			
+			
+
+</when>
+			<otherwise>
+				<error-handler-plugin:on-error doc:name="Process Error" doc:id="bae37be3-0e91-472c-bf51-5278a57b41c5" errorTypes="ENCOMPASS:INVALID_CLIENT_ID" errorCodes="500" errorMessages="Client Id is not valid" badRequestError='#[error.detailedDescription default "There was an issue with your request message."]' unauthorizedError='#[error.detailedDescription default "You have issues accessing the system"]' notFoundError='#[error.detailedDescription default "The API has not been implemented"]' notAcceptableError='#[error.detailedDescription default "One of the request or parameters is unacceptable"]' timeoutError='#[error.detailedDescription default "You request to the server has been timed-out"]' unsupportedMediaTypeError='#[error.detailedDescription default "Media Type not supported"]' tooManyRequestsError='#[error.detailedDescription default "You have made too many requests to the server"]' serverError='#[error.detailedDescription default "There is a server issue"]' methodNotAllowedError='#[error.detailedDescription default "The method has not been implemented"]' connectivityError='#[error.detailedDescription default "You have issues accessing the system"]'>
+				</error-handler-plugin:on-error>
+	
+			</otherwise>
+
+		</choice>
+		<set-variable value="#[attributes.httpStatus]" doc:name="Set Status" doc:id="4b2b106c-1fa0-4afa-91bd-e710ae717814" variableName="httpStatus" />
+		
+	<json-logger:logger doc:name="Log End with Exception" doc:id="d646d962-76fb-4eb2-89c7-b36bf24d97ed" message="Finished with Error" priority="ERROR" config-ref="JSON_Logger_Config" tracePoint="END">
+		</json-logger:logger>
+</sub-flow>
+	
+	</mule>

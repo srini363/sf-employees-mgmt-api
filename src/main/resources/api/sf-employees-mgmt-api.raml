@@ -1,0 +1,119 @@
+#%RAML 1.0
+title: sf-employees-mgmt-api
+version: v1
+description: Employee Management API acts as a interface to salesforce employee object.
+mediaType: [ application/json ]
+protocols: [ HTTP, HTTPS ]
+
+securedBy: [ basic_authentication, client_credentials]
+securitySchemes:
+  basic_authentication: !include security-schemas/basic_authentication.raml
+  client_credentials: !include security-schemas/client-credentials.raml
+  
+traits:
+  standard-error-responses: !include traits/standard-error-responses.raml
+
+types:
+  employee: !include types/employee-schema.raml
+  addresses : !include types/addresses-schema.raml
+  health-check: !include types/health-check-schema.raml
+
+/employees:
+  displayName: employee resource
+  description: create/update/retrieve employee information
+  is: [standard-error-responses]
+  post:
+    description: Insert an employee information along with addresses
+    body: 
+      application/json:
+        displayName: Employee request json body
+        type: employee
+        example: !include examples/response/sample-request-create-employee.json
+    responses: 
+      200:
+        description : Success
+        body:
+          application/json:
+            example: {"message" : "Successfully created the employee details "}   
+ 
+
+  /{id}:
+    displayName:  Employee information
+    description: update/retrive an employee
+    is: [standard-error-responses]
+    get:
+      description: retrive an employee with address.
+      responses:
+        200:
+          description : Success
+          body:
+            application/json:
+              type : employee
+              example: !include examples/response/sample-response-retrieve-employee.json
+
+    delete:
+      description: retrive an employee.
+      responses:
+        200:
+          description : Success
+          body:
+            application/json:
+              example: {"message" : "Successfully deleted the employee details "}              
+    
+    put:
+      description: update an employee.
+      body: 
+        application/json:
+          displayName: Json request body
+          type: employee
+          example: !include examples/response/sample-request-update-employee.json
+      responses: 
+        200:
+          description : update an employee.
+          body:
+            application/json:
+              example: {"message" : "Successfully updated  the employee detail "}
+
+/addresses:
+  /{id}:
+    displayName:  Employee information
+    description: update/retrive an employee
+    is: [standard-error-responses]
+    post:
+      description: create the addresses for an employee.
+      body: 
+        application/json:
+          displayName: Json request body
+          example: !include examples/response/sample-request-update-address.json
+      responses: 
+        200:
+          description : update an employee.
+          body:
+            application/json:
+              example: {"message" : "Successfully created  the address detail "}
+
+
+    put:      
+      description: update the addresses for an employee.
+      body: 
+        application/json:
+          displayName: Json request body
+          example: !include examples/response/sample-request-update-address.json
+      responses: 
+        200:
+          description : updating the address
+          body:
+            application/json:
+              example: {"message" : "Successfully updated  the address detail "}
+
+/health-check:
+  displayName: Health Check Resource
+  description: The health check resource will be used to provide information on the API health to the functional monitoring system.
+  is: [standard-error-responses]
+  get:
+    responses: 
+      200:
+        body: 
+          application/json:
+            type: health-check
+            example: !include examples/response/health-check.json

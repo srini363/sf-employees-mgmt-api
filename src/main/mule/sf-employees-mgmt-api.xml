@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+      <flow name="sf-employees-mgmt-api-main">
+        <http:listener config-ref="sf-employees-mgmt-api-httpListenerConfig" path="/api/v1/*" doc:name="Salesforce Employee management API HTTP Listener">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <logger level="INFO" doc:name="Log Request Details" doc:id="ada11b9e-651b-4fe0-b756-412323152fb6" message="#[payload]"/>
+		<logger level="DEBUG" doc:name="Log payload in debug mode" doc:id="8fbf9656-0f34-4779-bcab-5559478a580b" message="#[payload]"/>
+		
+        <apikit:router config-ref="sf-employees-mgmt-api-config" doc:name="Salesforce Employee mangement APIkit Router" doc:id="557cc367-ca68-40d8-9384-fdc4655fa5db"/>
+		<error-handler>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="882ec89d-6194-4277-bbc5-97962a29c01c" type="ANY">
+			<flow-ref doc:name="Call  Common Error Handler flow"
+					doc:id="fbb5da2d-dc8f-469a-aa86-08f6ea8e50da"
+					name="error-handlerSub_Flow" />
+			</on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="sf-employees-mgmt-api-console">
+        <http:listener config-ref="sf-employees-mgmt-api-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="sf-employees-mgmt-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="put:\employees\(id):application\json:sf-employees-mgmt-api-config">
+        <flow-ref doc:name="Update the Employee details" doc:id="772fe434-c558-48b7-b951-5224b92fe156" name="update-employee-detailsSub_Flow"/>
+    </flow>
+    
+    <flow name="delete:\employees\(id):sf-employees-mgmt-api-config">
+       <flow-ref doc:name="Delete the employee details with address data" doc:id="17f3a6ae-c4dc-4c2c-a2a2-f7a7fcd921bf" name="delete-employee-detailsSub_Flow"/>
+		
+    </flow>
+    
+    <flow name="get:\employees\(id):sf-employees-mgmt-api-config">
+      
+    <flow-ref doc:name="Get the employee details" doc:id="81650856-12e2-4389-8bae-4491afa25420" name="get-employees-details-Sub_Flow"/>
+		
+	
+        
+    </flow>
+    <flow name="post:\employees:application\json:sf-employees-mgmt-api-config">
+       <flow-ref doc:name="create the employee" doc:id="ad020815-ba6f-43b6-bff9-da822216759d" name="create-employees-details_Sub_Flow"/>
+		
+    </flow>
+    <flow name="post:\addresses\(id):application\json:sf-employees-mgmt-api-config">
+        <flow-ref doc:name="create the addresses for employee" doc:id="1e757076-df71-4267-9a29-3a75b37a6e98" name="create-addresses-for-employeeIdSub_Flow"/>
+		
+    </flow>
+    <flow name="put:\addresses\(id):application\json:sf-employees-mgmt-api-config">
+		<flow-ref doc:name="update the addresses for employee" doc:id="a1fa7c90-d620-4ce7-bc5e-fb6540848b46" name="update-addresses-for-employeeIdSub_Flow"/>
+    
+    </flow>
+    
+    <flow name="get:\health-check:sf-employees-mgmt-api-config">
+		<logger level="INFO" doc:name="Logger" doc:id="5370b401-d56d-4484-8515-79fb93003463" message='#["health-check-sub-flow : Starts"]'/>
+		<ee:transform doc:name="Health-check Response" doc:id="8c333244-3051-45aa-933d-049a45313667" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "api": {
+    "name": "sf-employees-mgmt-api",
+    "version": "1.0.0",
+    "environment": "common"
+  },
+  "status": "OK",
+  "message": "Success",
+  "timestamp": now()
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="6ffb5f26-ac51-401a-92ab-8f3a98351f78" message='#["health-check-sub-flow : Ends"]'/>
+    
+    </flow>
+</mule>

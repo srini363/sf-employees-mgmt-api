@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule
+xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+		xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd 
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+		<!-- <http:listener-config
+		name="salesforce-sys-api-httpListenerConfig">
+		<http:listener-connection host="${https.host}"
+			port="${https.port}"/>
+	</http:listener-config> -->
+		<tls:context
+		name="TLS_Context"
+		doc:name="TLS Context"
+		doc:id="2c7d15e4-c94c-4b16-8a72-d3e84cdd2ab1">
+		<tls:key-store
+			type="jks"
+			path="key/keystore.jks"
+			keyPassword="Indiana123#@!"
+			password="Indiana123#@!" />
+	</tls:context>
+	<json-logger:config name="JSON_Logger_Config"
+		doc:name="JSON Logger Config"
+		doc:id="4ad8d742-b160-4f1b-8cff-f9ae075711ba" environment="dev" />
+	<configuration-properties
+		doc:name="Configuration properties"
+		doc:id="3bcb7c8e-9a8b-42c0-9dbd-35689eb5890e"
+		file="config\common-properties.yaml" />
+	<salesforce:sfdc-config name="Salesforce_Config"
+		doc:name="Salesforce Config"
+		doc:id="dea4c58b-8724-4388-9631-156486602b13">
+		<salesforce:basic-connection
+			username="${secure::salesforce.username}" password="${secure::salesforce.password}"
+			securityToken="${secure::salesforce.securitytoken}" />
+	</salesforce:sfdc-config>
+	<http:listener-config name="sf-employees-mgmt-api-httpListenerConfig">
+        <http:listener-connection host="${http.host}" port="${http.port}" />
+    </http:listener-config>
+    <apikit:config name="sf-employees-mgmt-api-config" api="api\sf-employees-mgmt-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+  
+	<global-property doc:name="Global Property" doc:id="f9d46298-30a6-4227-8da7-b463003deaa5" name="env" value="common" />
+	<global-property doc:name="Global Property" doc:id="562c7b22-2bbf-45cb-9980-79284fb5ede2" name="securekey" value="uX]fJ*DEV*ad#(i@" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="94f0ca38-6c9a-48ca-bb08-895f20aac9ff" file="config/secure/${env}-secure-properties.yaml" key="${securekey}"/> 
+	  
+</mule>

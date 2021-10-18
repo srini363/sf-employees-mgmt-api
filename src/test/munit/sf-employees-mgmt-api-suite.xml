@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="sf-employees-mgmt-api-suite.xml" />
+	<munit:test name="sf-employees-mgmt-api-main-test" doc:id="f191b5d9-2f99-4352-95c3-642194f5030b" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Salesforce Employee mangement APIkit Router" doc:id="d6a54583-9968-4bed-b8de-0d24a830f2ab" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="557cc367-ca68-40d8-9384-fdc4655fa5db" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://sfemployeesmgmtapimaintest\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://sfemployeesmgmtapimaintest\mock_variable_.dwl')]" />
+						<munit-tools:variable key="httpStatus" value="#[readUrl('classpath://sfemployeesmgmtapimaintest\mock_variable_1.dwl')]" />
+						<munit-tools:variable key="id" value="#[output application/java --- readUrl('classpath://sfemployeesmgmtapimaintest\mock_variable_2.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="sfEmployeeResponse" value="#[output application/java --- readUrl('classpath://sfemployeesmgmtapimaintest\mock_variable_3.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="018c53f9-027c-4861-be64-9060320a14d1" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://sfemployeesmgmtapimaintest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://sfemployeesmgmtapimaintest\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to sf-employees-mgmt-api-main" doc:id="c0142c20-5840-4941-927b-e8e98123e869" name="sf-employees-mgmt-api-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="9125c88c-3fa8-4d66-b805-f547dad9c54b" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import sfemployeesmgmtapimaintest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+		<munit:test name="sf-employees-mgmt-api-test-suite-get:\health-check:sf-employees-mgmt-api-configTest" doc:id="d80c9e53-b153-4539-9653-b87ee9b48666" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\health-check:sf-employees-mgmt-api-config" doc:id="ee8daa9b-aa03-4f7e-bb3a-3a908e31ee1e" name="get:\health-check:sf-employees-mgmt-api-config"/>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>
