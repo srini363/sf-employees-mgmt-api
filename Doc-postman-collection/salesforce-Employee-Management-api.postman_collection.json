@@ -1,0 +1,182 @@
+{
+	"info": {
+		"_postman_id": "a9658dbd-5722-4f6a-8a45-bfdb2606aa49",
+		"name": "salesforce-Employee-Management-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8081/api/v1/employees",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"identification\": {\r\n        \"firstName\": \"salesforce1\",\r\n        \"lastName\": \"Vasan\",\r\n        \"dob\": \"02/21/1980\",\r\n        \"gender\": \"M\",\r\n        \"title\": \"Manager\"\r\n    },\r\n    \"address\": [\r\n        {\r\n            \"type\": \"home\",\r\n            \"number\": 12,\r\n            \"street\": \"blah blah St\",\r\n            \"unit\": \"1 a\",\r\n            \"city\": \"Somewhere\",\r\n            \"state\": \"WV\",\r\n            \"zipcode\": \"12345\"\r\n        },\r\n        {\r\n            \"type\": \"Office\",\r\n            \"number\": 12,\r\n            \"street\": \"blah blah St\",\r\n            \"unit\": \"1 a\",\r\n            \"city\": \"Somewhere\",\r\n            \"state\": \"WV\",\r\n            \"zipcode\": \"12345\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/v1/employees",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"employees"
+					]
+				},
+				"description": "create employee and address"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/v1/employees/28",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/v1/employees/28",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"employees",
+						"28"
+					]
+				},
+				"description": "Get the employee details along with address"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/v1/employees/28",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"identification\": {\r\n        \"firstName\": \"salesforce1\",\r\n        \"lastName\": \"Vasan\",\r\n        \"dob\": \"02/21/1980\",\r\n        \"gender\": \"M\",\r\n        \"title\": \"Manager\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/v1/employees/28",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"employees",
+						"28"
+					]
+				},
+				"description": "update - edit/change the employee details"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/v1/employees/28",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/v1/employees/28",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"employees",
+						"28"
+					]
+				},
+				"description": "Delete the employee record"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/v1/addresses/31",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"address\": \r\n        \r\n            [\r\n        {\r\n            \"type\": \"home1\",\r\n            \"number\":12,\r\n            \"street\": \"blah blah St1\",\r\n            \"unit\": \"1 a\",\r\n            \"city\": \"Somewhere\",\r\n            \"state\": \"WV\",\r\n            \"zipcode\": \"123451\"\r\n        }\r\n            ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/v1/addresses/31",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"addresses",
+						"31"
+					]
+				},
+				"description": "Update the address alone"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/v1/addresses/31",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"address\": \r\n        \r\n            [\r\n        {\r\n            \"type\": \"home1\",\r\n            \"number\":12,\r\n            \"street\": \"blah blah St1\",\r\n            \"unit\": \"1 a\",\r\n            \"city\": \"Somewhere\",\r\n            \"state\": \"WV\",\r\n            \"zipcode\": \"123451\"\r\n        }\r\n            ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/v1/addresses/31",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"addresses",
+						"31"
+					]
+				},
+				"description": "create the address alone for employee"
+			},
+			"response": []
+		}
+	]
+}
